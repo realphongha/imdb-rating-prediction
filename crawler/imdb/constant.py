@@ -14,7 +14,7 @@ US = "https://www.imdb.com/search/title/?countries=us" # movies from the US
 US_MOVIES = "https://www.imdb.com/search/title/?title_type=feature&countries=us" # only feature films from the US
 IMDB_TOP100 = "https://www.imdb.com/search/title/?groups=top_100"
 # crawl limit:
-MAX_MOVIES_TO_CRAWL = 200
+MAX_MOVIES_TO_CRAWL = 15000
 # select tool to crawl (our own awesome crawler or via OMDb API)
 OUR_CRAWLER = 1
 OMDB_API = 2
