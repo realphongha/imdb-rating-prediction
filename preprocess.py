@@ -1,4 +1,5 @@
 import datetime
+from sklearn.preprocessing import scale
 
 # RATING_SYSTEM = {"G": 0.0, "PG": 10.0, "PG-13": 20.0, "R": 30.0, "Unrated": 40.0, "Not Rated": 50.0}
 RATING_SYSTEM = {"G": 2.0, "PG": 4.0, "PG-13": 6.0, "R": 8.0, "Unrated": 10.0, "Not Rated": 10.0}
@@ -259,7 +260,7 @@ def preprocess(data_train, data_test, rounded=True):
         X_test.append(X_line)
         y_test.append(y_line)
         names_test.append(name)
-    return X_train, y_train, names_train, X_test, y_test, names_test
+    return scale(X_train), y_train, names_train, scale(X_test), y_test, names_test
 
 
 if __name__ == "__main__":
