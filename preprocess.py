@@ -46,10 +46,16 @@ def split_data(data, ration):
 
 def preprocess(data_train, data_test, rounded=True):
     genres_score = {}
-    actors_score = {}
     keywords_score = {}
     directors_score = {}
     writers_score = {}
+    actors_score = {}
+    producers_score = {}
+    composers_score = {}
+    cinematographers_score = {}
+    film_editors_score = {}
+    art_directors_score = {}
+
     for line in data_train:
         rating = int(float(line["imdb_rating"])) if rounded else float(line["imdb_rating"])
         genres = line["genres"].split(",")
@@ -93,12 +99,52 @@ def preprocess(data_train, data_test, rounded=True):
                 directors_score[director] = [rating, 1]
 
         writers = line["writers"].split(",")
-        for writer in writers:
-            if writer in writers_score:
-                writers_score[writer][0] += rating
-                writers_score[writer][1] += 1
+        for item in writers:
+            if item in writers_score:
+                writers_score[item][0] += rating
+                writers_score[item][1] += 1
             else:
-                writers_score[writer] = [rating, 1]
+                writers_score[item] = [rating, 1]
+
+        producers = line["producers"].split(",")
+        for item in producers:
+            if item in producers_score:
+                producers_score[item][0] += rating
+                producers_score[item][1] += 1
+            else:
+                producers_score[item] = [rating, 1]
+
+        composers = line["composers"].split(",")
+        for item in composers:
+            if item in composers_score:
+                composers_score[item][0] += rating
+                composers_score[item][1] += 1
+            else:
+                composers_score[item] = [rating, 1]
+        
+        cinematographers = line["cinematographers"].split(",")
+        for item in cinematographers:
+            if item in cinematographers_score:
+                cinematographers_score[item][0] += rating
+                cinematographers_score[item][1] += 1
+            else:
+                cinematographers_score[item] = [rating, 1]
+
+        film_editors = line["film_editors"].split(",")
+        for item in film_editors:
+            if item in film_editors_score:
+                film_editors_score[item][0] += rating
+                film_editors_score[item][1] += 1
+            else:
+                film_editors_score[item] = [rating, 1]
+        
+        art_directors = line["art_directors"].split(",")
+        for item in art_directors:
+            if item in art_directors_score:
+                art_directors_score[item][0] += rating
+                art_directors_score[item][1] += 1
+            else:
+                art_directors_score[item] = [rating, 1]
 
     X_train = []
     y_train = []
@@ -165,6 +211,36 @@ def preprocess(data_train, data_test, rounded=True):
         for writer in writers:
             writers_sum_score += writers_score[writer][0] / writers_score[writer][1]
         X_line.append(writers_sum_score / len(writers))
+
+        producers = line["producers"].split(",")
+        producers_sum_score = 0.0
+        for item in producers:
+            producers_sum_score += producers_score[item][0] / producers_score[item][1]
+        X_line.append(producers_sum_score / len(producers))
+
+        composers = line["composers"].split(",")
+        composers_sum_score = 0.0
+        for item in composers:
+            composers_sum_score += composers_score[item][0] / composers_score[item][1]
+        X_line.append(composers_sum_score / len(composers))
+
+        cinematographers = line["cinematographers"].split(",")
+        cinematographers_sum_score = 0.0
+        for item in cinematographers:
+            cinematographers_sum_score += cinematographers_score[item][0] / cinematographers_score[item][1]
+        X_line.append(cinematographers_sum_score / len(cinematographers))
+
+        film_editors = line["film_editors"].split(",")
+        film_editors_sum_score = 0.0
+        for item in film_editors:
+            film_editors_sum_score += film_editors_score[item][0] / film_editors_score[item][1]
+        X_line.append(film_editors_sum_score / len(film_editors))
+
+        art_directors = line["art_directors"].split(",")
+        art_directors_sum_score = 0.0
+        for item in art_directors:
+            art_directors_sum_score += art_directors_score[item][0] / art_directors_score[item][1]
+        X_line.append(art_directors_sum_score / len(art_directors))
 
         y_line = int(float(line["imdb_rating"]))*10 if rounded else int(float(line["imdb_rating"])*10)
         name = line["title"] + " - " + line["year"]
@@ -254,6 +330,51 @@ def preprocess(data_train, data_test, rounded=True):
                 writers_sum_score += 5.0
         X_line.append(writers_sum_score / len(writers))
 
+        producers = line["producers"].split(",")
+        producers_sum_score = 0.0
+        for item in producers:
+            try:
+                producers_sum_score += producers_score[item][0] / producers_score[item][1]
+            except KeyError:
+                producers_sum_score += 5.0
+        X_line.append(producers_sum_score / len(producers))
+
+        composers = line["composers"].split(",")
+        composers_sum_score = 0.0
+        for item in composers:
+            try:
+                composers_sum_score += composers_score[item][0] / composers_score[item][1]
+            except KeyError:
+                composers_sum_score += 5.0
+        X_line.append(composers_sum_score / len(composers))
+
+        cinematographers = line["cinematographers"].split(",")
+        cinematographers_sum_score = 0.0
+        for item in cinematographers:
+            try:
+                cinematographers_sum_score += cinematographers_score[item][0] / cinematographers_score[item][1]
+            except KeyError:
+                cinematographers_sum_score += 5.0
+        X_line.append(cinematographers_sum_score / len(cinematographers))
+
+        film_editors = line["film_editors"].split(",")
+        film_editors_sum_score = 0.0
+        for item in film_editors:
+            try:
+                film_editors_sum_score += film_editors_score[item][0] / film_editors_score[item][1]
+            except KeyError:
+                film_editors_sum_score += 5.0
+        X_line.append(film_editors_sum_score / len(film_editors))
+
+        art_directors = line["art_directors"].split(",")
+        art_directors_sum_score = 0.0
+        for item in art_directors:
+            try:
+                art_directors_sum_score += art_directors_score[item][0] / art_directors_score[item][1]
+            except KeyError:
+                art_directors_sum_score += 5.0
+        X_line.append(art_directors_sum_score / len(art_directors))
+
         y_line = int(float(line["imdb_rating"]))*10 if rounded else int(float(line["imdb_rating"])*10)
         name = line["title"] + " - " + line["year"]
 
@@ -262,6 +383,105 @@ def preprocess(data_train, data_test, rounded=True):
         names_test.append(name)
     return scale(X_train), y_train, names_train, scale(X_test), y_test, names_test
 
+def preprocess_v2(data_train, data_test, rounded=True, limitLines=-1):
+    list_genres = {}
+    list_keywords = {}
+    list_directors = {}
+    list_writers = {}
+    list_actors = {}
+    list_producers = {}
+    list_composers = {}
+    list_cinematographers = {}
+    list_film_editors = {}
+    list_art_directors = {}
 
+    def create_list_item(field_name,list_item):
+        list_item_in_record = line[field_name].split(",")
+        for item in list_item_in_record:
+            if item not in list_item:
+                list_item[item] = len(list_item)
+
+    for line in data_train:
+        rating = int(float(line["imdb_rating"])) if rounded else float(line["imdb_rating"])
+        create_list_item("genres",list_genres)
+        create_list_item("keywords",list_keywords)
+        create_list_item("directors",list_directors)
+        create_list_item("writers",list_writers)
+        create_list_item("actors",list_actors)
+        create_list_item("producers",list_producers)
+        create_list_item("composers",list_composers)
+        create_list_item("cinematographers",list_cinematographers)
+        create_list_item("film_editors",list_film_editors)
+        create_list_item("art_directors",list_art_directors)
+
+    counter = 0
+        
+    X_train = []
+    y_train = []
+    names_train = []
+    for line in data_train:
+        if (limitLines > 0 and counter >= limitLines):
+            break
+        else: counter += 1
+        
+        X_line = []
+        X_line.append(float(CURRENT_YEAR-int(line["year"])) / 10.0)
+        X_line.append(RATING_SYSTEM[line["rated"]])
+        X_line.append(time_str_to_num(line["runtime"])/10.0)
+        X_line.append(create_vector("genres",list_genres,line))
+        X_line.append(create_vector("keywords",list_keywords,line))
+        X_line.append(create_vector("directors",list_directors,line))
+        X_line.append(create_vector("writers",list_writers,line))
+        X_line.append(create_vector("actors",list_actors,line))
+        X_line.append(create_vector("producers",list_producers,line))
+        X_line.append(create_vector("composers",list_composers,line))
+        X_line.append(create_vector("cinematographers",list_cinematographers,line))
+        X_line.append(create_vector("film_editors",list_film_editors,line))
+        X_line.append(create_vector("art_directors",list_art_directors,line))
+
+        # X_line.append(5.0 if line["awards_oscar"] != None else 0.0)
+        # X_line.append(float(line["imdb_votes"])/1000.0)
+        # X_line.append(float(line["metascore"])/10.0 if line["metascore"] != None else 5.0)
+
+        y_line = int(float(line["imdb_rating"]))*10 if rounded else int(float(line["imdb_rating"])*10)
+        name = line["title"] + " - " + line["year"]
+
+        X_train.append(X_line)
+        y_train.append(y_line)
+        names_train.append(name)
+
+    X_test = []
+    y_test = []
+    names_test = []
+    for line in data_test:
+        X_line = []
+
+        X_line.append(float(CURRENT_YEAR-int(line["year"])) / 10.0)
+        X_line.append(RATING_SYSTEM[line["rated"]])
+        X_line.append(time_str_to_num(line["runtime"])/10.0)
+        X_line.append(create_vector("genres",list_genres,line))
+        X_line.append(create_vector("keywords",list_keywords,line))
+        X_line.append(create_vector("directors",list_directors,line))
+        X_line.append(create_vector("writers",list_writers,line))
+        X_line.append(create_vector("actors",list_actors,line))
+        X_line.append(create_vector("producers",list_producers,line))
+        X_line.append(create_vector("composers",list_composers,line))
+        X_line.append(create_vector("cinematographers",list_cinematographers,line))
+        X_line.append(create_vector("film_editors",list_film_editors,line))
+        X_line.append(create_vector("art_directors",list_art_directors,line))
+
+        # X_line.append(5.0 if line["awards_oscar"] != None else 0.0)
+        # X_line.append(float(line["imdb_votes"])/1000.0)
+        # X_line.append(float(line["metascore"])/10.0 if line["metascore"] != None else 5.0)
+
+        y_line = int(float(line["imdb_rating"]))*10 if rounded else int(float(line["imdb_rating"])*10)
+        name = line["title"] + " - " + line["year"]
+
+        X_test.append(X_line)
+        y_test.append(y_line)
+        names_test.append(name)
+
+    return scale(X_train), y_train, names_train, scale(X_test), y_test, names_test
+    
 if __name__ == "__main__":
     pass

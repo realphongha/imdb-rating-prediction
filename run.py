@@ -3,7 +3,7 @@ import random
 import preprocess
 from models import *
 
-TRAIN_FILE = "crawler/data1.json"
+TRAIN_FILE = "crawler/data3.json"
 EXAMPLE_FILE = "example.json"
 PREDICTION_FILE = "prediction.txt"
 TRAIN_TEST_RATION = 0.8
