@@ -54,26 +54,31 @@ class ImdbSpider(scrapy.Spider):
     def parse_movie_page(self, response):
         # parses the movie page to get data
         json_response = json.loads(response.css("script[type='application/ld+json']::text").get())
+
+        # drop if there's no IMDb rating
+        if "aggregateRating" not in json_response:
+            return
+        
         year = response.xpath("//*[@id='titleYear']/a/text()").get()
-        if type(json_response["director"]) == list:
-            directors = []
-            for director in json_response["director"]:
-                directors.append(director["name"])
-        elif type(json_response["director"]) == dict:
-            directors = json_response["director"]["name"]
-        if type(json_response["creator"]) == list:
-            writers = []
-            for writer in json_response["creator"]:
-                if writer["@type"] == "Person":
-                    writers.append(writer["name"])
-        elif type(json_response["creator"]) == dict:
-            writers = json_response["creator"]["name"]
-        if type(json_response["actor"]) == list:
-            actors = []
-            for actor in json_response["actor"]:
-                actors.append(actor["name"])
-        elif type(json_response["actor"]) == dict:
-            actors = json_response["actor"]["name"]
+        # if type(json_response["director"]) == list:
+        #     directors = []
+        #     for director in json_response["director"]:
+        #         directors.append(director["name"])
+        # elif type(json_response["director"]) == dict:
+        #     directors = json_response["director"]["name"]
+        # if type(json_response["creator"]) == list:
+        #     writers = []
+        #     for writer in json_response["creator"]:
+        #         if writer["@type"] == "Person":
+        #             writers.append(writer["name"])
+        # elif type(json_response["creator"]) == dict:
+        #     writers = json_response["creator"]["name"]
+        # if type(json_response["actor"]) == list:
+        #     actors = []
+        #     for actor in json_response["actor"]:
+        #         actors.append(actor["name"])
+        # elif type(json_response["actor"]) == dict:
+        #     actors = json_response["actor"]["name"]
         metascore = response.css("div.titleReviewBarItem a div span::text").get()
         try:
             awards_oscar = " ".join(response.xpath("//*[@id='titleAwardsRanks']/span[1]/b/text()").get().split())
@@ -89,13 +94,35 @@ class ImdbSpider(scrapy.Spider):
             duration = json_response["duration"]
         else:
             duration = None
-        if "aggregateRating" not in json_response:
-            return
-        yield Movie(title=json_response["name"], year=year, rated=json_response["contentRating"],
-                    runtime=json_response["duration"], genres=json_response["genre"], directors=directors,
-                    writers=writers, actors=actors, awards_oscar=awards_oscar, awards_other=awards_other,
-                    imdb_votes=json_response["aggregateRating"]["ratingCount"], metascore=metascore,
-                    keywords=json_response["keywords"], imdb_rating=json_response["aggregateRating"]["ratingValue"])
+
+        # go to Full cast and crew page
+        cast_and_crew_page_url = response.xpath("//*[@id='quicklinksMainSection']/a/@href").get()
+
+        movie = Movie(
+            title=json_response["name"], 
+            year=year, 
+            rated=json_response["contentRating"],
+            runtime=json_response["duration"], 
+            genres=json_response["genre"], 
+            keywords=json_response["keywords"], 
+           
+            directors = [],
+            writers = [],
+            actors = [],
+            producers = [],
+            composers = [],
+            cinematographers = [],
+            film_editors = [],
+            art_directors = [],
+
+            awards_oscar=awards_oscar, 
+            awards_other=awards_other,
+            imdb_votes=json_response["aggregateRating"]["ratingCount"], 
+            metascore=metascore,
+            imdb_rating=json_response["aggregateRating"]["ratingValue"]
+            )
+
+        yield scrapy.Request(url=IMDB + str(cast_and_crew_page_url), callback=self.parse_cast_and_crew_page, meta={'movie': movie})
         # custom crawler using selectors but inconsistent:
 
         # title = response.xpath("//*[@id='title-overview-widget']/div/div/div/div/div[@class='title_wrapper']/h1/text()").get().strip()
@@ -139,6 +166,23 @@ class ImdbSpider(scrapy.Spider):
         # yield Movie(title=title, year=year, rated=rated, runtime=runtime, genres=genres, directors=directors,
         #             writers=writers, actors=actors, awards_oscar=awards_oscar, awards_other=awards_other,
         #             imdb_votes=imdb_votes, metascore=metascore, imdb_rating=imdb_rating)
+
+    def parse_cast_and_crew_page(self, response):
+        # nothing here
+        movie = response.meta['movie']
+
+        movie['directors'] = response.xpath("//*[@id='director']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        # movie['directors'] = response.css("#director + table .name > a::text").getall()
+        movie['writers'] = response.xpath("//*[@id='writer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        # movie['writers'] = response.css("#writer + table .name > a::text").getall()
+        movie['actors'] = response.xpath("//*[@id='cast']/following-sibling::table[1]//td[@class='primary_photo']/following-sibling::td[1]/a/text()").getall()[:MAX_ACTOR_PER_MOVIE]
+        movie['producers'] = response.xpath("//*[@id='producer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        movie['composers'] = response.xpath("//*[@id='composer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        movie['cinematographers'] = response.xpath("//*[@id='cinematographer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        movie['film_editors'] = response.xpath("//*[@id='editor']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        movie['art_directors'] = response.xpath("//*[@id='art_director']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        
+        yield movie
 
     # handles via OMDb API:
     def parse_search_page_OMDb(self, response):
