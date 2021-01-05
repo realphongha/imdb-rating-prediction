@@ -383,105 +383,105 @@ def preprocess(data_train, data_test, rounded=True):
         names_test.append(name)
     return scale(X_train), y_train, names_train, scale(X_test), y_test, names_test
 
-def preprocess_v2(data_train, data_test, rounded=True, limitLines=-1):
-    list_genres = {}
-    list_keywords = {}
-    list_directors = {}
-    list_writers = {}
-    list_actors = {}
-    list_producers = {}
-    list_composers = {}
-    list_cinematographers = {}
-    list_film_editors = {}
-    list_art_directors = {}
-
-    def create_list_item(field_name,list_item):
-        list_item_in_record = line[field_name].split(",")
-        for item in list_item_in_record:
-            if item not in list_item:
-                list_item[item] = len(list_item)
-
-    for line in data_train:
-        rating = int(float(line["imdb_rating"])) if rounded else float(line["imdb_rating"])
-        create_list_item("genres",list_genres)
-        create_list_item("keywords",list_keywords)
-        create_list_item("directors",list_directors)
-        create_list_item("writers",list_writers)
-        create_list_item("actors",list_actors)
-        create_list_item("producers",list_producers)
-        create_list_item("composers",list_composers)
-        create_list_item("cinematographers",list_cinematographers)
-        create_list_item("film_editors",list_film_editors)
-        create_list_item("art_directors",list_art_directors)
-
-    counter = 0
-        
-    X_train = []
-    y_train = []
-    names_train = []
-    for line in data_train:
-        if (limitLines > 0 and counter >= limitLines):
-            break
-        else: counter += 1
-        
-        X_line = []
-        X_line.append(float(CURRENT_YEAR-int(line["year"])) / 10.0)
-        X_line.append(RATING_SYSTEM[line["rated"]])
-        X_line.append(time_str_to_num(line["runtime"])/10.0)
-        X_line.append(create_vector("genres",list_genres,line))
-        X_line.append(create_vector("keywords",list_keywords,line))
-        X_line.append(create_vector("directors",list_directors,line))
-        X_line.append(create_vector("writers",list_writers,line))
-        X_line.append(create_vector("actors",list_actors,line))
-        X_line.append(create_vector("producers",list_producers,line))
-        X_line.append(create_vector("composers",list_composers,line))
-        X_line.append(create_vector("cinematographers",list_cinematographers,line))
-        X_line.append(create_vector("film_editors",list_film_editors,line))
-        X_line.append(create_vector("art_directors",list_art_directors,line))
-
-        # X_line.append(5.0 if line["awards_oscar"] != None else 0.0)
-        # X_line.append(float(line["imdb_votes"])/1000.0)
-        # X_line.append(float(line["metascore"])/10.0 if line["metascore"] != None else 5.0)
-
-        y_line = int(float(line["imdb_rating"]))*10 if rounded else int(float(line["imdb_rating"])*10)
-        name = line["title"] + " - " + line["year"]
-
-        X_train.append(X_line)
-        y_train.append(y_line)
-        names_train.append(name)
-
-    X_test = []
-    y_test = []
-    names_test = []
-    for line in data_test:
-        X_line = []
-
-        X_line.append(float(CURRENT_YEAR-int(line["year"])) / 10.0)
-        X_line.append(RATING_SYSTEM[line["rated"]])
-        X_line.append(time_str_to_num(line["runtime"])/10.0)
-        X_line.append(create_vector("genres",list_genres,line))
-        X_line.append(create_vector("keywords",list_keywords,line))
-        X_line.append(create_vector("directors",list_directors,line))
-        X_line.append(create_vector("writers",list_writers,line))
-        X_line.append(create_vector("actors",list_actors,line))
-        X_line.append(create_vector("producers",list_producers,line))
-        X_line.append(create_vector("composers",list_composers,line))
-        X_line.append(create_vector("cinematographers",list_cinematographers,line))
-        X_line.append(create_vector("film_editors",list_film_editors,line))
-        X_line.append(create_vector("art_directors",list_art_directors,line))
-
-        # X_line.append(5.0 if line["awards_oscar"] != None else 0.0)
-        # X_line.append(float(line["imdb_votes"])/1000.0)
-        # X_line.append(float(line["metascore"])/10.0 if line["metascore"] != None else 5.0)
-
-        y_line = int(float(line["imdb_rating"]))*10 if rounded else int(float(line["imdb_rating"])*10)
-        name = line["title"] + " - " + line["year"]
-
-        X_test.append(X_line)
-        y_test.append(y_line)
-        names_test.append(name)
-
-    return scale(X_train), y_train, names_train, scale(X_test), y_test, names_test
+# def preprocess_v2(data_train, data_test, rounded=True, limitLines=-1):
+#     list_genres = {}
+#     list_keywords = {}
+#     list_directors = {}
+#     list_writers = {}
+#     list_actors = {}
+#     list_producers = {}
+#     list_composers = {}
+#     list_cinematographers = {}
+#     list_film_editors = {}
+#     list_art_directors = {}
+#
+#     def create_list_item(field_name,list_item):
+#         list_item_in_record = line[field_name].split(",")
+#         for item in list_item_in_record:
+#             if item not in list_item:
+#                 list_item[item] = len(list_item)
+#
+#     for line in data_train:
+#         rating = int(float(line["imdb_rating"])) if rounded else float(line["imdb_rating"])
+#         create_list_item("genres",list_genres)
+#         create_list_item("keywords",list_keywords)
+#         create_list_item("directors",list_directors)
+#         create_list_item("writers",list_writers)
+#         create_list_item("actors",list_actors)
+#         create_list_item("producers",list_producers)
+#         create_list_item("composers",list_composers)
+#         create_list_item("cinematographers",list_cinematographers)
+#         create_list_item("film_editors",list_film_editors)
+#         create_list_item("art_directors",list_art_directors)
+#
+#     counter = 0
+#
+#     X_train = []
+#     y_train = []
+#     names_train = []
+#     for line in data_train:
+#         if (limitLines > 0 and counter >= limitLines):
+#             break
+#         else: counter += 1
+#
+#         X_line = []
+#         X_line.append(float(CURRENT_YEAR-int(line["year"])) / 10.0)
+#         X_line.append(RATING_SYSTEM[line["rated"]])
+#         X_line.append(time_str_to_num(line["runtime"])/10.0)
+#         X_line.append(create_vector("genres",list_genres,line))
+#         X_line.append(create_vector("keywords",list_keywords,line))
+#         X_line.append(create_vector("directors",list_directors,line))
+#         X_line.append(create_vector("writers",list_writers,line))
+#         X_line.append(create_vector("actors",list_actors,line))
+#         X_line.append(create_vector("producers",list_producers,line))
+#         X_line.append(create_vector("composers",list_composers,line))
+#         X_line.append(create_vector("cinematographers",list_cinematographers,line))
+#         X_line.append(create_vector("film_editors",list_film_editors,line))
+#         X_line.append(create_vector("art_directors",list_art_directors,line))
+#
+#         # X_line.append(5.0 if line["awards_oscar"] != None else 0.0)
+#         # X_line.append(float(line["imdb_votes"])/1000.0)
+#         # X_line.append(float(line["metascore"])/10.0 if line["metascore"] != None else 5.0)
+#
+#         y_line = int(float(line["imdb_rating"]))*10 if rounded else int(float(line["imdb_rating"])*10)
+#         name = line["title"] + " - " + line["year"]
+#
+#         X_train.append(X_line)
+#         y_train.append(y_line)
+#         names_train.append(name)
+#
+#     X_test = []
+#     y_test = []
+#     names_test = []
+#     for line in data_test:
+#         X_line = []
+#
+#         X_line.append(float(CURRENT_YEAR-int(line["year"])) / 10.0)
+#         X_line.append(RATING_SYSTEM[line["rated"]])
+#         X_line.append(time_str_to_num(line["runtime"])/10.0)
+#         X_line.append(create_vector("genres",list_genres,line))
+#         X_line.append(create_vector("keywords",list_keywords,line))
+#         X_line.append(create_vector("directors",list_directors,line))
+#         X_line.append(create_vector("writers",list_writers,line))
+#         X_line.append(create_vector("actors",list_actors,line))
+#         X_line.append(create_vector("producers",list_producers,line))
+#         X_line.append(create_vector("composers",list_composers,line))
+#         X_line.append(create_vector("cinematographers",list_cinematographers,line))
+#         X_line.append(create_vector("film_editors",list_film_editors,line))
+#         X_line.append(create_vector("art_directors",list_art_directors,line))
+#
+#         # X_line.append(5.0 if line["awards_oscar"] != None else 0.0)
+#         # X_line.append(float(line["imdb_votes"])/1000.0)
+#         # X_line.append(float(line["metascore"])/10.0 if line["metascore"] != None else 5.0)
+#
+#         y_line = int(float(line["imdb_rating"]))*10 if rounded else int(float(line["imdb_rating"])*10)
+#         name = line["title"] + " - " + line["year"]
+#
+#         X_test.append(X_line)
+#         y_test.append(y_line)
+#         names_test.append(name)
+#
+#     return scale(X_train), y_train, names_train, scale(X_test), y_test, names_test
     
 if __name__ == "__main__":
     pass

@@ -21,7 +21,7 @@ def svm_reg(X_train, y_train, X_test, y_test):
     # for i in range(len(pred)):
     #     file.write(names_test[i] + ": " + str(pred[i]) + "\n")
     # file.close()
-    return err
+    return err, pred
 
 
 def svm_clf(X_train, y_train, X_test, y_test):
@@ -31,7 +31,7 @@ def svm_clf(X_train, y_train, X_test, y_test):
     svc.fit(X_train, y_train)
     pred = svc.predict(X_test)
     err = evaluate.error_margin(pred, y_test) / 10.0
-    return err
+    return err, pred
 
 
 def random_forest_reg(X_train, y_train, X_test, y_test):
@@ -40,7 +40,7 @@ def random_forest_reg(X_train, y_train, X_test, y_test):
     random_forest.fit(X_train, y_train)
     pred = random_forest.predict(X_test)
     err = evaluate.error_margin(pred, y_test) / 10.0
-    return err
+    return err, pred
 
 
 def knn(X_train, y_train, X_test, y_test):
@@ -51,7 +51,7 @@ def knn(X_train, y_train, X_test, y_test):
     knn.fit(X_train, y_train)
     pred = knn.predict(X_test)
     err = evaluate.error_margin(pred, y_test) / 10.0
-    return err
+    return err, pred
 
 
 def naive_bayes(X_train, y_train, X_test, y_test):
@@ -60,7 +60,7 @@ def naive_bayes(X_train, y_train, X_test, y_test):
     pred = nb.predict(X_test)
     err = evaluate.error_margin(pred, y_test) / 10.0
     # print(nb.get_params())
-    return err
+    return err, pred
 
 
 def logistic_reg(X_train, y_train, X_test, y_test):
@@ -70,7 +70,7 @@ def logistic_reg(X_train, y_train, X_test, y_test):
     lg.fit(X_train, y_train)
     pred = lg.predict(X_test)
     err = evaluate.error_margin(pred, y_test) / 10.0
-    return err
+    return err, pred
 
 
 def ridge_reg(X_train, y_train, X_test, y_test):
@@ -78,7 +78,7 @@ def ridge_reg(X_train, y_train, X_test, y_test):
     ridge.fit(X_train, y_train)
     pred = ridge.predict(X_test)
     err = evaluate.error_margin(pred, y_test) / 10.0
-    return err
+    return err, pred
 
 
 def ridge_clf(X_train, y_train, X_test, y_test):
@@ -86,7 +86,7 @@ def ridge_clf(X_train, y_train, X_test, y_test):
     ridge.fit(X_train, y_train)
     pred = ridge.predict(X_test)
     err = evaluate.error_margin(pred, y_test) / 10.0
-    return err
+    return err, pred
 
 
 def knn_op_params(X_train, y_train, X_test, y_test):
