@@ -186,8 +186,7 @@ def logistic_reg_op_params(X_train, y_train, X_test, y_test):
 
 def ridge_reg_op_params(X_train, y_train, X_test, y_test):
     parameters = {"alpha": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-                  "solver": ['svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']
-                  }
+                  "solver": ['svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']}
     ridge = Ridge()
     scoring = {'err_margin': metrics.make_scorer(evaluate.error_margin, greater_is_better=False)}
 
@@ -202,8 +201,7 @@ def ridge_reg_op_params(X_train, y_train, X_test, y_test):
 
 def ridge_clf_op_params(X_train, y_train, X_test, y_test):
     parameters = {"alpha": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-                  "solver": ['svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']
-                  }
+                  "solver": ['svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']}
     ridge = RidgeClassifier()
     scoring = {'err_margin': metrics.make_scorer(evaluate.error_margin, greater_is_better=False)}
 

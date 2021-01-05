@@ -1,5 +1,6 @@
 THRESHOLD_PREDICTION = 10
 
+
 def error_margin(y_predict, y_test):
     assert len(y_predict) == len(y_test), "y_predict and y_test must have same length!"
     sum_error_margin = 0.0

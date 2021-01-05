@@ -26,7 +26,7 @@ class ImdbSpider(scrapy.Spider):
 
     def make_url(self, imdb_id):
         # makes url request from movie id and OMDb API secret key
-        return URL_TEMPLATE%(imdb_id, self.OMDb_API_key)
+        return URL_TEMPLATE % (imdb_id, self.OMDb_API_key)
 
     def stop_crawling(self):
         # STOP!!!
