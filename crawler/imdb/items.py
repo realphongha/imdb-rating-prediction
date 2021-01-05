@@ -37,4 +37,3 @@ class Movie(scrapy.Item):
     imdb_votes = scrapy.Field()
     metascore = scrapy.Field()
     imdb_rating = scrapy.Field()
-

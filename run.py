@@ -1,5 +1,6 @@
 import json
 import random
+
 import preprocess
 from models import *
 
@@ -23,7 +24,7 @@ X_train2, y_train2, names_train2, X_test2, y_test2, names_test2 = preprocess.pre
 
 
 def divided_by_ten(x):
-    return [i/10 for i in x]
+    return [i / 10 for i in x]
 
 
 def run_models():
@@ -62,7 +63,6 @@ def run_demo():
     _, __, ___, X_example, y_example, names_example = preprocess.preprocess(data_train, raw_data, False)
     _, __, ___, X_example2, y_example2, names_example2 = preprocess.preprocess(data_train, raw_data, True)
 
-
     print("Prediction of movies:", names_example, "using KNN.")
     print("Real IMDB score:", divided_by_ten(y_example))
     # print("and rounded score:", divided_by_ten(y_example2))
@@ -95,9 +95,11 @@ def run_demo():
 def run_optimize_params():
     print("svr error margin (optimized params):", svm_reg_op_params(X_train, y_train, X_test, y_test))
     print("svc error margin (optimized params):", svm_clf_op_params(X_train, y_train, X_test, y_test))
-    print("random forest error margin (optimized params):", random_forest_reg_op_params(X_train, y_train, X_test, y_test))
+    print("random forest error margin (optimized params):",
+          random_forest_reg_op_params(X_train, y_train, X_test, y_test))
     print("knn clf error margin (optimized params):", knn_op_params(X_train, y_train, X_test, y_test))
-    print("logistic regression error margin (optimized params):", logistic_reg_op_params(X_train, y_train, X_test, y_test))
+    print("logistic regression error margin (optimized params):",
+          logistic_reg_op_params(X_train, y_train, X_test, y_test))
     print("ridge regression error margin (optimized params):", ridge_reg_op_params(X_train, y_train, X_test, y_test))
     print("ridge clf error margin (optimized params):", ridge_clf_op_params(X_train, y_train, X_test, y_test))
 
@@ -108,7 +110,7 @@ def run_experiment():
               "log1": [], "log2": [], "ridge_reg1": [], "ridge_reg2": [],
               "ridge_clf1": [], "ridge_clf2": []}
     for i in range(ITER):
-        print("Iter:", i+1)
+        print("Iter:", i + 1)
         raw_data = []
         random.shuffle(lines)
         for line in lines:
@@ -117,7 +119,8 @@ def run_experiment():
         # imdb rating as float:
         X_train, y_train, names_train, X_test, y_test, names_test = preprocess.preprocess(data_train, data_test, False)
         # rounded imdb rating:
-        X_train2, y_train2, names_train2, X_test2, y_test2, names_test2 = preprocess.preprocess(data_train, data_test, True)
+        X_train2, y_train2, names_train2, X_test2, y_test2, names_test2 = preprocess.preprocess(data_train, data_test,
+                                                                                                True)
 
         scores["svr1"].append(svm_reg(X_train, y_train, X_test, y_test))
         scores["svr2"].append(svm_reg(X_train2, y_train2, X_test2, y_test2))
@@ -137,12 +140,13 @@ def run_experiment():
         scores["ridge_clf2"].append(ridge_clf(X_train2, y_train2, X_test2, y_test2))
 
     for key in scores:
-        mean = sum(scores[key])/len(scores[key])
+        mean = sum(scores[key]) / len(scores[key])
         scores[key].append(mean)
         print(key, mean)
 
     print(scores)
     return scores
+
 
 if __name__ == "__main__":
     run_demo()

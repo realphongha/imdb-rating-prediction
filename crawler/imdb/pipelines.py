@@ -5,6 +5,7 @@ github.com/realphongha
 """
 
 import json
+
 from .constant import *
 
 
@@ -38,7 +39,7 @@ class MoviePipeline:
                 item["art_directors"] = ",".join(map(lambda s: s.strip(), item["art_directors"]))
             self.movies.append(dict(item))
         else:
-            if "Error" not in item["json"] and "Title" in item["json"]: # ignores error response
+            if "Error" not in item["json"] and "Title" in item["json"]:  # ignores error response
                 self.movie_jsons.append(item["json"])
 
     def close_spider(self, spider):

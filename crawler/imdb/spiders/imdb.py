@@ -7,12 +7,13 @@ We use OMDb API to get data more easily: http://www.omdbapi.com/
 You need OMDb API key to start crawling.
 """
 
-import scrapy
 import json
-import logging
-from ..items import *
-from ..constant import *
+
 from scrapy.exceptions import CloseSpider
+
+from ..constant import *
+from ..items import *
+
 
 # turns off debug log:
 # logging.getLogger('scrapy').setLevel(logging.WARNING)
@@ -20,13 +21,12 @@ from scrapy.exceptions import CloseSpider
 
 
 class ImdbSpider(scrapy.Spider):
-
     handle_httpstatus_list = [401]
     name = "imdb"
 
     def make_url(self, imdb_id):
         # makes url request from movie id and OMDb API secret key
-        return URL_TEMPLATE%(imdb_id, self.OMDb_API_key)
+        return URL_TEMPLATE % (imdb_id, self.OMDb_API_key)
 
     def stop_crawling(self):
         # STOP!!!
@@ -35,7 +35,7 @@ class ImdbSpider(scrapy.Spider):
     def start_requests(self):
         if CRAWL_TOOL == OUR_CRAWLER:
             yield scrapy.Request(url=US_MOVIES, callback=self.parse_search_page)
-        else: # CRAWL_TOOL == OMDB_API
+        else:  # CRAWL_TOOL == OMDB_API
             self.OMDb_API_key = input("Enter your OMDb API key to start crawling: ").strip()
             yield scrapy.Request(url=US_MOVIES, callback=self.parse_search_page_OMDb)
 
@@ -47,7 +47,8 @@ class ImdbSpider(scrapy.Spider):
         for movie in movies:
             yield scrapy.Request(url=IMDB + str(movie), callback=self.parse_movie_page)
 
-        next_page = response.xpath("//*[@id='main']/div[@class='article']/div[@class='desc']/a[@class='lister-page-next next-page']/@href").get()
+        next_page = response.xpath(
+            "//*[@id='main']/div[@class='article']/div[@class='desc']/a[@class='lister-page-next next-page']/@href").get()
         print("NEXT PAGE:", next_page)
         yield scrapy.Request(url=IMDB + str(next_page), callback=self.parse_search_page)
 
@@ -58,7 +59,7 @@ class ImdbSpider(scrapy.Spider):
         # drop if there's no IMDb rating
         if "aggregateRating" not in json_response:
             return
-        
+
         year = response.xpath("//*[@id='titleYear']/a/text()").get()
         # if type(json_response["director"]) == list:
         #     directors = []
@@ -99,30 +100,31 @@ class ImdbSpider(scrapy.Spider):
         cast_and_crew_page_url = response.xpath("//*[@id='quicklinksMainSection']/a/@href").get()
 
         movie = Movie(
-            title=json_response["name"], 
-            year=year, 
+            title=json_response["name"],
+            year=year,
             rated=json_response["contentRating"],
-            runtime=json_response["duration"], 
-            genres=json_response["genre"], 
-            keywords=json_response["keywords"], 
-           
-            directors = [],
-            writers = [],
-            actors = [],
-            producers = [],
-            composers = [],
-            cinematographers = [],
-            film_editors = [],
-            art_directors = [],
+            runtime=json_response["duration"],
+            genres=json_response["genre"],
+            keywords=json_response["keywords"],
 
-            awards_oscar=awards_oscar, 
+            directors=[],
+            writers=[],
+            actors=[],
+            producers=[],
+            composers=[],
+            cinematographers=[],
+            film_editors=[],
+            art_directors=[],
+
+            awards_oscar=awards_oscar,
             awards_other=awards_other,
-            imdb_votes=json_response["aggregateRating"]["ratingCount"], 
+            imdb_votes=json_response["aggregateRating"]["ratingCount"],
             metascore=metascore,
             imdb_rating=json_response["aggregateRating"]["ratingValue"]
-            )
+        )
 
-        yield scrapy.Request(url=IMDB + str(cast_and_crew_page_url), callback=self.parse_cast_and_crew_page, meta={'movie': movie})
+        yield scrapy.Request(url=IMDB + str(cast_and_crew_page_url), callback=self.parse_cast_and_crew_page,
+                             meta={'movie': movie})
         # custom crawler using selectors but inconsistent:
 
         # title = response.xpath("//*[@id='title-overview-widget']/div/div/div/div/div[@class='title_wrapper']/h1/text()").get().strip()
@@ -171,27 +173,38 @@ class ImdbSpider(scrapy.Spider):
         # nothing here
         movie = response.meta['movie']
 
-        movie['directors'] = response.xpath("//*[@id='director']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        movie['directors'] = response.xpath(
+            "//*[@id='director']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
         # movie['directors'] = response.css("#director + table .name > a::text").getall()
-        movie['writers'] = response.xpath("//*[@id='writer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        movie['writers'] = response.xpath(
+            "//*[@id='writer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
         # movie['writers'] = response.css("#writer + table .name > a::text").getall()
-        movie['actors'] = response.xpath("//*[@id='cast']/following-sibling::table[1]//td[@class='primary_photo']/following-sibling::td[1]/a/text()").getall()[:MAX_ACTOR_PER_MOVIE]
-        movie['producers'] = response.xpath("//*[@id='producer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
-        movie['composers'] = response.xpath("//*[@id='composer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
-        movie['cinematographers'] = response.xpath("//*[@id='cinematographer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
-        movie['film_editors'] = response.xpath("//*[@id='editor']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
-        movie['art_directors'] = response.xpath("//*[@id='art_director']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
-        
+        movie['actors'] = response.xpath(
+            "//*[@id='cast']/following-sibling::table[1]//td[@class='primary_photo']/following-sibling::td[1]/a/text()").getall()[
+                          :MAX_ACTOR_PER_MOVIE]
+        movie['producers'] = response.xpath(
+            "//*[@id='producer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        movie['composers'] = response.xpath(
+            "//*[@id='composer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        movie['cinematographers'] = response.xpath(
+            "//*[@id='cinematographer']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        movie['film_editors'] = response.xpath(
+            "//*[@id='editor']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+        movie['art_directors'] = response.xpath(
+            "//*[@id='art_director']/following-sibling::table[1]//td[@class='name']/a/text()").getall()
+
         yield movie
 
     # handles via OMDb API:
     def parse_search_page_OMDb(self, response):
         # parses the search page to generate links to movies' json data on OMDb
-        movie_ids = response.xpath("//*[@id='main']/div[@class='article']/div/div/div/div/div[@class='ribbonize']/@data-tconst").getall()
+        movie_ids = response.xpath(
+            "//*[@id='main']/div[@class='article']/div/div/div/div/div[@class='ribbonize']/@data-tconst").getall()
         for movie_id in map(str, movie_ids):
             yield scrapy.Request(url=self.make_url(movie_id), callback=self.parse_json_OMDb)
 
-        next_page = response.xpath("//*[@id='main']/div[@class='article']/div[@class='desc']/a[@class='lister-page-next next-page']/@href").get()
+        next_page = response.xpath(
+            "//*[@id='main']/div[@class='article']/div[@class='desc']/a[@class='lister-page-next next-page']/@href").get()
         print("NEXT", next_page)
         yield scrapy.Request(url=IMDB + str(next_page), callback=self.parse_search_page_OMDb)
 

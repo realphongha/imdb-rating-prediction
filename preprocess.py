@@ -1,4 +1,5 @@
 import datetime
+
 from sklearn.preprocessing import scale
 
 # RATING_SYSTEM = {"G": 0.0, "PG": 10.0, "PG-13": 20.0, "R": 30.0, "Unrated": 40.0, "Not Rated": 50.0}
@@ -21,10 +22,10 @@ def time_str_to_num(time):
         if "H" in time:
             h = int(time[2:time.index("H")])
             if "M" in time:
-                m = int(time[time.index("H")+1:-1])
+                m = int(time[time.index("H") + 1:-1])
         else:
             m = int(time[2:-1])
-        return h*60 + m
+        return h * 60 + m
     else:
         return None
 
@@ -121,7 +122,7 @@ def preprocess(data_train, data_test, rounded=True):
                 composers_score[item][1] += 1
             else:
                 composers_score[item] = [rating, 1]
-        
+
         cinematographers = line["cinematographers"].split(",")
         for item in cinematographers:
             if item in cinematographers_score:
@@ -137,7 +138,7 @@ def preprocess(data_train, data_test, rounded=True):
                 film_editors_score[item][1] += 1
             else:
                 film_editors_score[item] = [rating, 1]
-        
+
         art_directors = line["art_directors"].split(",")
         for item in art_directors:
             if item in art_directors_score:
@@ -153,17 +154,17 @@ def preprocess(data_train, data_test, rounded=True):
 
         X_line = []
 
-        X_line.append(float(CURRENT_YEAR-int(line["year"])) / 10.0)
+        X_line.append(float(CURRENT_YEAR - int(line["year"])) / 10.0)
 
         X_line.append(RATING_SYSTEM[line["rated"]])
 
-        X_line.append(time_str_to_num(line["runtime"])/10.0)
+        X_line.append(time_str_to_num(line["runtime"]) / 10.0)
 
         X_line.append(5.0 if line["awards_oscar"] != None else 0.0)
 
-        X_line.append(float(line["imdb_votes"])/1000.0)
+        X_line.append(float(line["imdb_votes"]) / 1000.0)
 
-        X_line.append(float(line["metascore"])/10.0 if line["metascore"] != None else 5.0)
+        X_line.append(float(line["metascore"]) / 10.0 if line["metascore"] != None else 5.0)
 
         genres = line["genres"].split(",")
         # for i in range(3):
@@ -173,8 +174,8 @@ def preprocess(data_train, data_test, rounded=True):
         #         X_line.append(0.0)
         genres_sum_score = 0.0
         for genre in genres:
-            genres_sum_score += genres_score[genre][0]/genres_score[genre][1]
-        X_line.append(genres_sum_score/len(genres))
+            genres_sum_score += genres_score[genre][0] / genres_score[genre][1]
+        X_line.append(genres_sum_score / len(genres))
 
         actors = line["actors"].split(",")
         # for i in range(3):
@@ -184,7 +185,7 @@ def preprocess(data_train, data_test, rounded=True):
         #         X_line.append(0.0)
         actors_sum_score = 0.0
         for actor in actors:
-            actors_sum_score += actors_score[actor][0]/actors_score[actor][1]
+            actors_sum_score += actors_score[actor][0] / actors_score[actor][1]
         X_line.append(actors_sum_score / len(actors))
 
         keywords = line["keywords"].split(",")
@@ -195,7 +196,7 @@ def preprocess(data_train, data_test, rounded=True):
         #         X_line.append(0.0)
         keywords_sum_score = 0.0
         for keyword in keywords:
-            keywords_sum_score += keywords_score[keyword][0]/keywords_score[keyword][1]
+            keywords_sum_score += keywords_score[keyword][0] / keywords_score[keyword][1]
         X_line.append(keywords_sum_score / len(keywords))
 
         directors = line["directors"].split(",") if type(line["directors"]) == str else line["directors"]
@@ -242,7 +243,7 @@ def preprocess(data_train, data_test, rounded=True):
             art_directors_sum_score += art_directors_score[item][0] / art_directors_score[item][1]
         X_line.append(art_directors_sum_score / len(art_directors))
 
-        y_line = int(float(line["imdb_rating"]))*10 if rounded else int(float(line["imdb_rating"])*10)
+        y_line = int(float(line["imdb_rating"])) * 10 if rounded else int(float(line["imdb_rating"]) * 10)
         name = line["title"] + " - " + line["year"]
 
         X_train.append(X_line)
@@ -256,17 +257,17 @@ def preprocess(data_train, data_test, rounded=True):
 
         X_line = []
 
-        X_line.append(float(CURRENT_YEAR-int(line["year"])) / 10.0)
+        X_line.append(float(CURRENT_YEAR - int(line["year"])) / 10.0)
 
         X_line.append(RATING_SYSTEM[line["rated"]])
 
-        X_line.append(time_str_to_num(line["runtime"])/10.0)
+        X_line.append(time_str_to_num(line["runtime"]) / 10.0)
 
         X_line.append(5.0 if line["awards_oscar"] != None else 0.0)
 
-        X_line.append(float(line["imdb_votes"])/1000.0)
+        X_line.append(float(line["imdb_votes"]) / 1000.0)
 
-        X_line.append(float(line["metascore"])/10.0 if line["metascore"] != None else 5.0)
+        X_line.append(float(line["metascore"]) / 10.0 if line["metascore"] != None else 5.0)
 
         genres = line["genres"].split(",")
         # for i in range(3):
@@ -375,13 +376,14 @@ def preprocess(data_train, data_test, rounded=True):
                 art_directors_sum_score += 5.0
         X_line.append(art_directors_sum_score / len(art_directors))
 
-        y_line = int(float(line["imdb_rating"]))*10 if rounded else int(float(line["imdb_rating"])*10)
+        y_line = int(float(line["imdb_rating"])) * 10 if rounded else int(float(line["imdb_rating"]) * 10)
         name = line["title"] + " - " + line["year"]
 
         X_test.append(X_line)
         y_test.append(y_line)
         names_test.append(name)
     return scale(X_train), y_train, names_train, scale(X_test), y_test, names_test
+
 
 # def preprocess_v2(data_train, data_test, rounded=True, limitLines=-1):
 #     list_genres = {}
@@ -482,6 +484,6 @@ def preprocess(data_train, data_test, rounded=True):
 #         names_test.append(name)
 #
 #     return scale(X_train), y_train, names_train, scale(X_test), y_test, names_test
-    
+
 if __name__ == "__main__":
     pass

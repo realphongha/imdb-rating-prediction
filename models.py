@@ -1,11 +1,12 @@
-import evaluate
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
 from sklearn import metrics
-from sklearn.svm import SVR, SVC
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression, Ridge, RidgeClassifier
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVR, SVC
+
+import evaluate
 
 
 def svm_reg(X_train, y_train, X_test, y_test):
