@@ -1,6 +1,6 @@
 import datetime
 
-from sklearn.preprocessing import scale
+from sklearn.preprocessing import scale, normalize
 
 # RATING_SYSTEM = {"G": 0.0, "PG": 10.0, "PG-13": 20.0, "R": 30.0, "Unrated": 40.0, "Not Rated": 50.0}
 RATING_SYSTEM = {"G": 2.0, "PG": 4.0, "PG-13": 6.0, "R": 8.0, "Unrated": 10.0, "Not Rated": 10.0}
@@ -382,7 +382,7 @@ def preprocess(data_train, data_test, rounded=True):
         X_test.append(X_line)
         y_test.append(y_line)
         names_test.append(name)
-    return scale(X_train), y_train, names_train, scale(X_test), y_test, names_test
+    return normalize(scale(X_train)), y_train, names_train, normalize(scale(X_test)), y_test, names_test
 
 
 # def preprocess_v2(data_train, data_test, rounded=True, limitLines=-1):
